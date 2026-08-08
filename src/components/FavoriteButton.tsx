@@ -1,8 +1,8 @@
 "use client";
 
 import { StarIcon } from "@/components/ui/icons";
-import { useAuth } from "@/components/AuthProvider";
 import { useFavorites, toggleFavorite } from "@/lib/use-favorites";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export default function FavoriteButton({
   teamId,
@@ -11,27 +11,23 @@ export default function FavoriteButton({
   teamId: number;
   size?: number;
 }) {
-  const { user, favorites, toggleFavorite: toggleRemote } = useAuth();
-  const localFavorites = useFavorites();
-  const isFav = user ? favorites.includes(teamId) : localFavorites.includes(teamId);
+  const favorites = useFavorites();
+  const isFav = favorites.includes(teamId);
+  const { t } = useLanguage();
 
   function handleToggle(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (user) {
-      void toggleRemote(teamId);
-    } else {
-      toggleFavorite(teamId);
-    }
+    toggleFavorite(teamId);
   }
 
   return (
     <button
       type="button"
       onClick={handleToggle}
-      aria-label={isFav ? "Hapus dari favorit" : "Favoritkan tim"}
+      aria-label={isFav ? t("fav.remove") : t("fav.add")}
       aria-pressed={isFav}
-      title={isFav ? "Hapus dari favorit" : "Favoritkan tim"}
+      title={isFav ? t("fav.remove") : t("fav.add")}
       className={`shrink-0 transition-colors ${
         isFav ? "text-amber-400" : "text-muted hover:text-amber-400"
       }`}

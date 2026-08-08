@@ -2,18 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
+import { LEAGUE } from "@/lib/api/league";
 import type { Match, MatchStatus } from "@/types";
 import MatchCard from "@/components/MatchCard";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useLanguage } from "@/components/LanguageProvider";
 
 const POLL_MS = 15_000;
 type Filter = "all" | MatchStatus;
 
-const FILTERS: { key: Filter; label: string }[] = [
-  { key: "all", label: "Semua" },
-  { key: "LIVE", label: "Live" },
-  { key: "SCHEDULED", label: "Akan Datang" },
-  { key: "FT", label: "Selesai" },
+const FILTERS: { key: Filter; labelKey: string }[] = [
+  { key: "all", labelKey: "live.filterAll" },
+  { key: "LIVE", labelKey: "live.filterLive" },
+  { key: "SCHEDULED", labelKey: "live.filterUpcoming" },
+  { key: "FT", labelKey: "live.filterFinished" },
 ];
 
 function MatchCardSkeleton() {
@@ -34,9 +36,12 @@ export default function LiveMatches() {
   const [filter, setFilter] = useState<Filter>("all");
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [error, setError] = useState(false);
+  const [polling, setPolling] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let cancelled = false;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
     async function load() {
       try {
         const data = await api.getTodayMatches();
@@ -44,15 +49,23 @@ export default function LiveMatches() {
         setMatches(data);
         setLastUpdated(new Date());
         setError(false);
+        const hasUpcoming = data.some(
+          (m) => m.status === "LIVE" || m.status === "SCHEDULED" || m.status === "HT"
+        );
+        if (!hasUpcoming && intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+          setPolling(false);
+        }
       } catch {
         if (!cancelled) setError(true);
       }
     }
     load();
-    const id = setInterval(load, POLL_MS);
+    intervalId = setInterval(load, POLL_MS);
     return () => {
       cancelled = true;
-      clearInterval(id);
+      if (intervalId) clearInterval(intervalId);
     };
   }, []);
 
@@ -71,7 +84,7 @@ export default function LiveMatches() {
     <section>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-1.5">
-          {FILTERS.map(({ key, label }) => (
+          {FILTERS.map(({ key, labelKey }) => (
             <button
               key={key}
               type="button"
@@ -82,21 +95,25 @@ export default function LiveMatches() {
                   : "bg-surface text-muted hover:text-foreground"
               }`}
             >
-              {label}
+              {t(labelKey)}
               {key === "LIVE" && liveCount > 0 ? ` (${liveCount})` : ""}
             </button>
           ))}
         </div>
         <div className="text-xs text-muted">
-          {lastUpdated
-            ? `Terakhir diperbarui ${lastUpdated.toLocaleTimeString("id-ID")}`
-            : "Memperbarui otomatis setiap 15 detik..."}
+          {polling
+            ? lastUpdated
+              ? t("live.updated", {
+                  time: lastUpdated.toLocaleTimeString(t("lang.locale")),
+                })
+              : t("live.updating")
+            : t("live.updatedOn", { season: LEAGUE.season })}
         </div>
       </div>
 
       {error ? (
         <div className="rounded-2xl border border-live/40 bg-live/10 p-6 text-center text-sm text-foreground">
-          Data sementara tidak tersedia. Silakan muat ulang halaman.
+          {t("live.error")}
         </div>
       ) : null}
 
@@ -108,7 +125,9 @@ export default function LiveMatches() {
         </div>
       ) : visible.length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-10 text-center text-sm text-muted">
-          Tidak ada pertandingan untuk filter ini.
+          {filter === "all" && !polling
+            ? t("live.empty", { season: LEAGUE.season })
+            : t("live.emptyFilter")}
         </div>
       ) : (
         <div className="grid gap-3">

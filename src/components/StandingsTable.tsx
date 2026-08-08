@@ -3,13 +3,10 @@
 import Link from "next/link";
 import type { StandingsRow } from "@/types";
 import { TeamCrest } from "@/components/ui/TeamCrest";
-import { useFavorites as useLocalFavorites } from "@/lib/use-favorites";
-import { useAuth } from "@/components/AuthProvider";
+import { useFavorites } from "@/lib/use-favorites";
 
 export default function StandingsTable({ rows }: { rows: StandingsRow[] }) {
-  const { user, favorites } = useAuth();
-  const localFavorites = useLocalFavorites();
-  const favIds = user ? favorites : localFavorites;
+  const favIds = useFavorites();
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-border bg-surface">

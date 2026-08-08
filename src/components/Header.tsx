@@ -1,25 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/lib/nav";
-import { ShieldIcon, UserIcon, LogoutIcon } from "@/components/ui/icons";
-import { useAuth } from "@/components/AuthProvider";
+import { ShieldIcon, SunIcon, MoonIcon, GlobeIcon } from "@/components/ui/icons";
+import { useTheme } from "@/components/ThemeProvider";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export default function Header() {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, status, refresh } = useAuth();
+  const { theme, toggle } = useTheme();
+  const { lang, setLang, t } = useLanguage();
 
   function isActive(href: string) {
     return href === "/" ? pathname === "/" : pathname.startsWith(href);
-  }
-
-  async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST", cache: "no-store" });
-    await refresh();
-    router.push("/");
-    router.refresh();
   }
 
   return (
@@ -35,7 +29,7 @@ export default function Header() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {NAV_ITEMS.map(({ href, label }) => (
+          {NAV_ITEMS.map(({ href, labelKey }) => (
             <Link
               key={href}
               href={href}
@@ -43,54 +37,35 @@ export default function Header() {
                 isActive(href) ? "bg-surface text-accent" : "text-muted hover:text-foreground"
               }`}
             >
-              {label}
+              {t(labelKey)}
             </Link>
           ))}
-
-          {status === "authenticated" && user ? (
-            <div className="ml-2 flex items-center gap-2 rounded-lg bg-surface px-2 py-1.5">
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-accent/20 text-xs font-bold text-accent">
-                {user.name.charAt(0).toUpperCase()}
-              </span>
-              <Link
-                href="/profile"
-                className="hidden max-w-32 truncate text-sm font-semibold transition-colors hover:text-accent sm:block"
-                title={user.name}
-              >
-                {user.name.split(" ")[0]}
-              </Link>
-              <button
-                type="button"
-                onClick={handleLogout}
-                aria-label="Keluar"
-                title="Keluar"
-                className="grid h-7 w-7 place-items-center rounded-md text-muted transition-colors hover:text-live"
-              >
-                <LogoutIcon width={16} height={16} />
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="ml-2 rounded-lg bg-accent px-4 py-2 text-sm font-bold text-background transition-colors hover:bg-accent-strong"
-            >
-              Masuk
-            </Link>
-          )}
         </nav>
 
-        <div className="flex items-center gap-1 md:hidden">
-          {status !== "authenticated" && (
-            <Link
-              href="/login"
-              className="rounded-lg bg-accent px-3.5 py-1.5 text-sm font-bold text-background"
-            >
-              Masuk
-            </Link>
-          )}
-          <Link href="/profile" aria-label="Profil" className="text-muted">
-            <UserIcon width={22} height={22} />
-          </Link>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setLang(lang === "id" ? "en" : "id")}
+            aria-label="Ganti bahasa"
+            title={lang === "id" ? "Switch to English" : "Ganti ke Indonesia"}
+            className="flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-bold text-muted transition-colors hover:text-foreground"
+          >
+            <GlobeIcon width={16} height={16} />
+            {lang === "id" ? "ID" : "EN"}
+          </button>
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={theme === "dark" ? "Mode terang" : "Mode gelap"}
+            title={theme === "dark" ? "Mode terang" : "Mode gelap"}
+            className="grid h-9 w-9 place-items-center rounded-lg text-muted transition-colors hover:text-foreground"
+          >
+            {theme === "dark" ? (
+              <SunIcon width={18} height={18} />
+            ) : (
+              <MoonIcon width={18} height={18} />
+            )}
+          </button>
         </div>
       </div>
     </header>

@@ -1,8 +1,9 @@
-import { LEAGUE } from "@/lib/api/league";
+import { LEAGUE, teamById } from "@/lib/api/league";
 import type {
   LineupPlayer,
   Match,
   MatchDetail,
+  MatchEvent,
   MatchStatPair,
   MatchStatus,
   PlayerStat,
@@ -16,30 +17,18 @@ import type { SportsProvider } from "./types";
 const BASE_URL = "https://v3.football.api-sports.io";
 const KEY = process.env.API_FOOTBALL_KEY ?? "";
 
-const KNOWN_TEAMS = new Map<number, Team>(
-  (
-    [
-      [33, "Manchester United"], [34, "Newcastle United"], [35, "Manchester City"],
-      [36, "Aston Villa"], [40, "Liverpool"], [41, "Southampton"], [42, "Arsenal"],
-      [45, "Everton"], [47, "Tottenham Hotspur"], [48, "West Ham United"],
-      [49, "Chelsea"], [50, "Leicester City"], [51, "Crystal Palace"],
-      [52, "Wolverhampton Wanderers"], [55, "Brentford"], [62, "Brighton & Hove Albion"],
-      [63, "Fulham"], [65, "Nottingham Forest"], [72, "Bournemouth"], [145, "Ipswich Town"],
-    ] as [number, string][]
-  ).map(([id, name]) => [id, { id, name, shortName: name.slice(0, 3).toUpperCase(), crestColor: "#334155" }])
-);
+const SEASON = (() => {
+  const fromEnv = Number(process.env.API_FOOTBALL_SEASON);
+  return Number.isInteger(fromEnv) && fromEnv > 0 ? fromEnv : LEAGUE.apiSeason;
+})();
 
-const CREST_COLORS: Record<number, string> = {
-  33: "#da291c", 34: "#241f20", 35: "#6cabdd", 36: "#670e36", 40: "#c8102e",
-  41: "#d71920", 42: "#ef0107", 45: "#003399", 47: "#132257", 48: "#7a263a",
-  49: "#034694", 50: "#003090", 51: "#1b458f", 52: "#fdb913", 55: "#e30613",
-  62: "#0057b8", 63: "#000000", 65: "#dd0000", 72: "#b50e12", 145: "#0033a0",
-};
+const REVALIDATE = Number(process.env.API_FOOTBALL_CACHE_SECONDS) || 3600;
+const REVALIDATE_STATIC = 86_400;
 
 function resolveTeam(id: number, fallbackName: string): Team {
-  const known = KNOWN_TEAMS.get(id);
+  const known = teamById.get(id);
   if (known) {
-    return { ...known, crestColor: CREST_COLORS[id] ?? known.crestColor };
+    return known;
   }
   return {
     id,
@@ -54,9 +43,8 @@ function num(v: unknown): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-function currentSeason(): number {
-  const now = new Date();
-  return now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+function activeSeason(): number {
+  return SEASON;
 }
 
 function todayKey(): string {
@@ -114,10 +102,10 @@ function toMatch(f: APIFixture): Match {
   };
 }
 
-async function footballGet<T>(path: string): Promise<T> {
+async function footballGet<T>(path: string, revalidate = REVALIDATE): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
     headers: { "x-apisports-key": KEY },
-    next: { revalidate: 0 },
+    next: { revalidate },
   });
   if (!res.ok) throw new Error(`API-Football HTTP ${res.status}`);
   const data = (await res.json()) as { errors?: Record<string, string>; response: unknown };
@@ -135,15 +123,15 @@ function isEnabled(): boolean {
   return KEY.length > 0;
 }
 
-async function getFixtures(query: string): Promise<Match[]> {
-  const data = await footballGet<{ response: APIFixture[] }>(query);
+async function getFixtures(query: string, revalidate = REVALIDATE): Promise<Match[]> {
+  const data = await footballGet<{ response: APIFixture[] }>(query, revalidate);
   return (data.response ?? []).map(toMatch);
 }
 
 export const footballProvider: SportsProvider = {
   getTodayMatches: () =>
     withFallback(
-      () => getFixtures(`/fixtures?league=${LEAGUE.id}&season=${currentSeason()}&date=${todayKey()}`),
+      () => getFixtures(`/fixtures?league=${LEAGUE.id}&season=${activeSeason()}&date=${todayKey()}`),
       () => mockProvider.getTodayMatches()
     ),
 
@@ -151,7 +139,8 @@ export const footballProvider: SportsProvider = {
     return withFallback(
       async () => {
         const matches = await getFixtures(
-          `/fixtures?league=${LEAGUE.id}&season=${currentSeason()}&round=Regular Season - ${round}`
+          `/fixtures?league=${LEAGUE.id}&season=${activeSeason()}&round=Regular Season - ${round}`,
+          REVALIDATE_STATIC
         );
         const range =
           matches.length > 0
@@ -167,7 +156,7 @@ export const footballProvider: SportsProvider = {
     withFallback(async () => {
       const data = await footballGet<{
         response: { league: { standings: APIRow[][] } }[];
-      }>(`/standings?league=${LEAGUE.id}&season=${currentSeason()}`);
+      }>(`/standings?league=${LEAGUE.id}&season=${activeSeason()}`, REVALIDATE_STATIC);
       const rows = data.response?.[0]?.league?.standings?.[0] ?? [];
       return rows
         .map((r) => {
@@ -191,16 +180,16 @@ export const footballProvider: SportsProvider = {
     withFallback(async () => {
       const data = await footballGet<{
         response: { team: { id: number; name: string }; venue: { name: string | null; city: string | null } }[];
-      }>(`/teams?league=${LEAGUE.id}&season=${currentSeason()}`);
+      }>(`/teams?league=${LEAGUE.id}&season=${activeSeason()}`, REVALIDATE_STATIC);
       return (data.response ?? []).map((r) => {
-        const known = KNOWN_TEAMS.get(r.team.id);
+        const known = teamById.get(r.team.id);
         return {
           id: r.team.id,
-          name: r.team.name,
+          name: known?.name ?? r.team.name,
           shortName: known?.shortName ?? r.team.name.slice(0, 3).toUpperCase(),
-          crestColor: CREST_COLORS[r.team.id] ?? "#334155",
-          city: r.venue?.city ?? undefined,
-          stadium: r.venue?.name ?? undefined,
+          crestColor: known?.crestColor ?? "#334155",
+          city: known?.city ?? r.venue?.city ?? undefined,
+          stadium: known?.stadium ?? r.venue?.name ?? undefined,
         };
       });
     }, () => mockProvider.getTeams()),
@@ -213,7 +202,7 @@ export const footballProvider: SportsProvider = {
 
   getTeamFixtures: (id) =>
     withFallback(
-      () => getFixtures(`/fixtures?team=${id}&league=${LEAGUE.id}&season=${currentSeason()}`),
+      () => getFixtures(`/fixtures?team=${id}&league=${LEAGUE.id}&season=${activeSeason()}`, REVALIDATE_STATIC),
       () => mockProvider.getTeamFixtures(id)
     ),
 
@@ -236,16 +225,16 @@ export const footballProvider: SportsProvider = {
   async getMatch(id) {
     return withFallback(async () => {
       const [fixtureRes, statsRes, lineupRes] = await Promise.all([
-        footballGet<{ response: APIFixture[] }>(`/fixtures?id=${id}`),
+        footballGet<{ response: APIFixture[] }>(`/fixtures?id=${id}`, REVALIDATE_STATIC),
         footballGet<{
           response: { team: { id: number }; statistics: { type: string; value: string | null }[] }[];
-        }>(`/fixtures/statistics?fixture=${id}`),
+        }>(`/fixtures/statistics?fixture=${id}`, REVALIDATE_STATIC),
         footballGet<{
           response: {
             team: { id: number };
             startXI: { player: { id: number | null; name: string | null; pos: string | null; number: number | null } }[];
           }[];
-        }>(`/fixtures/lineups?fixture=${id}`),
+        }>(`/fixtures/lineups?fixture=${id}`, REVALIDATE_STATIC),
       ]);
 
       const fixture = fixtureRes.response?.[0];
@@ -290,6 +279,30 @@ export const footballProvider: SportsProvider = {
         }));
       };
 
+      let eventsResponse: APIEvent[] = [];
+      try {
+        const res = await footballGet<{ response: APIEvent[] }>(
+          `/fixtures/events?fixture=${id}`,
+          REVALIDATE_STATIC
+        );
+        eventsResponse = res.response ?? [];
+      } catch {
+        eventsResponse = [];
+      }
+
+      const events = eventsResponse
+        .filter((e) => e.type === "Goal" || e.type === "Card" || e.type === "Subst")
+        .map((e) => ({
+          minute: num(e.time?.elapsed),
+          teamId: e.team?.id ?? 0,
+          type: e.type as MatchEvent["type"],
+          detail: e.detail ?? "",
+          player: e.player?.name ?? "—",
+          assist: e.assist?.name ?? undefined,
+          comments: e.comments ?? undefined,
+        }))
+        .sort((a, b) => a.minute - b.minute);
+
       return {
         ...match,
         referee: fixture.fixture.referee?.fullname ?? undefined,
@@ -297,6 +310,7 @@ export const footballProvider: SportsProvider = {
         stats,
         lineupHome: lineup(homeId),
         lineupAway: lineup(awayId),
+        events,
       } as MatchDetail;
     }, async () => mockProvider.getMatch(id));
   },
@@ -314,6 +328,16 @@ export const footballProvider: SportsProvider = {
     ),
 };
 
+interface APIEvent {
+  time: { elapsed: number | null; extra: number | null };
+  team: { id: number | null; name: string | null };
+  player: { id: number | null; name: string | null };
+  assist: { id: number | null; name: string | null } | null;
+  type: string;
+  detail: string;
+  comments: string | null;
+}
+
 interface APIPlayerStat {
   player: { id: number; name: string };
   statistics: {
@@ -322,7 +346,6 @@ interface APIPlayerStat {
     goals: { total: number | null; assists: number | null };
   }[];
 }
-
 interface APIRow {
   rank: number | null;
   team: { id: number; name: string };
@@ -338,7 +361,8 @@ interface APIRow {
 
 async function fetchTopPlayers(path: string): Promise<PlayerStat[]> {
   const data = await footballGet<{ response: APIPlayerStat[] }>(
-    `${path}?league=${LEAGUE.id}&season=${currentSeason()}`
+    `${path}?league=${LEAGUE.id}&season=${activeSeason()}`,
+    REVALIDATE_STATIC
   );
   return (data.response ?? []).slice(0, 10).map((r) => {
     const s = r.statistics?.[0];

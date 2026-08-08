@@ -55,12 +55,25 @@ export interface MatchStatPair {
   away: number;
 }
 
+export type MatchEventType = "Goal" | "Card" | "Subst";
+
+export interface MatchEvent {
+  minute: number;
+  teamId: number;
+  type: MatchEventType;
+  detail: string;
+  player: string;
+  assist?: string;
+  comments?: string;
+}
+
 export interface MatchDetail extends Match {
   referee?: string;
   attendance?: string;
   stats: MatchStatPair[];
   lineupHome: LineupPlayer[];
   lineupAway: LineupPlayer[];
+  events?: MatchEvent[];
 }
 
 export type TeamResult = "W" | "D" | "L";

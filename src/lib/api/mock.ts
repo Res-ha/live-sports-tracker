@@ -1,4 +1,4 @@
-import { TEAMS, LEAGUE } from "./league";
+import { TEAMS, LEAGUE, teamById } from "./league";
 import type {
   Match,
   MatchDetail,
@@ -9,12 +9,12 @@ import type {
   TeamResult,
 } from "@/types";
 
-const SEASON_START = new Date(2025, 7, 16);
+const SEASON_START = new Date(2024, 7, 16);
 
 const STRENGTH: Record<number, number> = {
-  35: 92, 42: 91, 40: 90, 49: 88, 34: 86, 47: 85, 36: 84, 33: 83,
-  62: 80, 55: 79, 48: 78, 51: 77, 72: 77, 63: 76, 45: 74, 52: 74,
-  65: 74, 50: 72, 145: 68, 41: 67,
+  50: 92, 42: 91, 40: 90, 49: 88, 34: 86, 47: 85, 66: 84, 33: 83,
+  51: 80, 55: 79, 48: 78, 52: 77, 35: 77, 36: 76, 45: 74, 39: 74,
+  65: 74, 46: 72, 57: 68, 41: 67,
 };
 
 function strengthOf(teamId: number): number {
@@ -279,16 +279,16 @@ export function getMatchById(id: number): MatchDetail | undefined {
 }
 
 const SCORERS: PlayerStat[] = [
-  { id: 1, name: "E. Haaland", team: TEAMS[2], goals: 27, assists: 5, appearances: 31 },
-  { id: 2, name: "M. Salah", team: TEAMS[4], goals: 24, assists: 14, appearances: 32 },
-  { id: 3, name: "A. Isak", team: TEAMS[1], goals: 21, assists: 6, appearances: 30 },
-  { id: 4, name: "C. Palmer", team: TEAMS[10], goals: 18, assists: 12, appearances: 32 },
-  { id: 5, name: "B. Saka", team: TEAMS[6], goals: 17, assists: 11, appearances: 29 },
-  { id: 6, name: "O. Watkins", team: TEAMS[3], goals: 16, assists: 7, appearances: 31 },
-  { id: 7, name: "B. Fernandes", team: TEAMS[0], goals: 14, assists: 9, appearances: 33 },
-  { id: 8, name: "Son Heung-min", team: TEAMS[8], goals: 14, assists: 8, appearances: 30 },
-  { id: 9, name: "C. Wood", team: TEAMS[17], goals: 13, assists: 3, appearances: 30 },
-  { id: 10, name: "J. Maddison", team: TEAMS[8], goals: 12, assists: 10, appearances: 31 },
+  { id: 1, name: "E. Haaland", team: teamById.get(50)!, goals: 27, assists: 5, appearances: 31 },
+  { id: 2, name: "M. Salah", team: teamById.get(40)!, goals: 24, assists: 14, appearances: 32 },
+  { id: 3, name: "A. Isak", team: teamById.get(34)!, goals: 21, assists: 6, appearances: 30 },
+  { id: 4, name: "C. Palmer", team: teamById.get(49)!, goals: 18, assists: 12, appearances: 32 },
+  { id: 5, name: "B. Saka", team: teamById.get(42)!, goals: 17, assists: 11, appearances: 29 },
+  { id: 6, name: "O. Watkins", team: teamById.get(66)!, goals: 16, assists: 7, appearances: 31 },
+  { id: 7, name: "B. Fernandes", team: teamById.get(33)!, goals: 14, assists: 9, appearances: 33 },
+  { id: 8, name: "Son Heung-min", team: teamById.get(47)!, goals: 14, assists: 8, appearances: 30 },
+  { id: 9, name: "C. Wood", team: teamById.get(65)!, goals: 13, assists: 3, appearances: 30 },
+  { id: 10, name: "J. Maddison", team: teamById.get(47)!, goals: 12, assists: 10, appearances: 31 },
 ];
 
 const ASSISTERS: PlayerStat[] = [...SCORERS].sort((a, b) => b.assists - a.assists).slice(0, 10);
