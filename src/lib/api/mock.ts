@@ -2,6 +2,7 @@ import { TEAMS, LEAGUE, teamById } from "./league";
 import type {
   Match,
   MatchDetail,
+  MatchEvent,
   MatchStatPair,
   PlayerStat,
   StandingsRow,
@@ -10,6 +11,29 @@ import type {
 } from "@/types";
 
 const SEASON_START = new Date(2024, 7, 16);
+
+const COACHES: Record<number, string> = {
+  33: "R. Amorim",
+  34: "E. Howe",
+  35: "A. Iraola",
+  36: "M. Silva",
+  39: "V. Pereira",
+  40: "A. Slot",
+  41: "I. Jurić",
+  42: "M. Arteta",
+  45: "D. Moyes",
+  46: "R. van Nistelrooy",
+  47: "A. Postecoglou",
+  48: "G. Potter",
+  49: "E. Maresca",
+  50: "P. Guardiola",
+  51: "F. Hürzeler",
+  52: "O. Glasner",
+  55: "T. Frank",
+  57: "K. McKenna",
+  65: "N. Espírito Santo",
+  66: "U. Emery",
+};
 
 const STRENGTH: Record<number, number> = {
   50: 92, 42: 91, 40: 90, 49: 88, 34: 86, 47: 85, 66: 84, 33: 83,
@@ -109,16 +133,8 @@ function applyResults(match: Match): Match {
 const ALL_ROUNDS: Match[][] = Array.from({ length: 38 }, (_, i) => {
   const round = i + 1;
   const matches = roundKickoffs(round);
-  if (round < LEAGUE.currentRound) {
+  if (round <= LEAGUE.currentRound) {
     return matches.map(applyResults);
-  }
-  if (round === LEAGUE.currentRound) {
-    return matches.map((m, i) => {
-      if (i === 0) return { ...m, status: "LIVE", minute: 63, homeScore: 1, awayScore: 0 };
-      if (i === 1) return { ...m, status: "LIVE", minute: 78, homeScore: 2, awayScore: 2 };
-      if (i === 2) return { ...m, status: "HT", homeScore: 0, awayScore: 1 };
-      return m;
-    });
   }
   return matches;
 });
@@ -208,6 +224,72 @@ function buildLineup(teamId: number, seed: number) {
   return players;
 }
 
+function pickNames(seed: number, count: number): string[] {
+  return [...SURNAMES]
+    .sort(
+      (a, b) => seededRandom(seed + a.charCodeAt(0)) - seededRandom(seed + b.charCodeAt(0))
+    )
+    .slice(0, count);
+}
+
+function buildEvents(match: Match, seed: number): MatchEvent[] {
+  const events: MatchEvent[] = [];
+  if (match.homeScore === null || match.awayScore === null) return events;
+  const homePlayers = pickNames(seed, 11);
+  const awayPlayers = pickNames(seed + 500, 11);
+
+  let minute = 4;
+  for (let i = 0; i < match.homeScore; i++) {
+    minute += 4 + Math.floor(seededRandom(seed + i * 3 + 1) * 12);
+    const player = homePlayers[Math.floor(seededRandom(seed + i * 7 + 2) * homePlayers.length)];
+    const assist =
+      seededRandom(seed + i * 11 + 3) < 0.6
+        ? awayPlayers[Math.floor(seededRandom(seed + i * 13 + 4) * awayPlayers.length)]
+        : undefined;
+    events.push({ minute, teamId: match.homeTeam.id, type: "Goal", detail: "Normal Goal", player, assist });
+  }
+
+  minute = 3;
+  for (let i = 0; i < match.awayScore; i++) {
+    minute += 4 + Math.floor(seededRandom(seed + i * 3 + 21) * 12);
+    const player = awayPlayers[Math.floor(seededRandom(seed + i * 7 + 22) * awayPlayers.length)];
+    const assist =
+      seededRandom(seed + i * 11 + 23) < 0.6
+        ? homePlayers[Math.floor(seededRandom(seed + i * 13 + 24) * homePlayers.length)]
+        : undefined;
+    events.push({ minute, teamId: match.awayTeam.id, type: "Goal", detail: "Normal Goal", player, assist });
+  }
+
+  if (seededRandom(seed + 41) < 0.7) {
+    const homeSide = seededRandom(seed + 42) < 0.5;
+    const teamId = homeSide ? match.homeTeam.id : match.awayTeam.id;
+    const players = homeSide ? homePlayers : awayPlayers;
+    events.push({
+      minute: 20 + Math.floor(seededRandom(seed + 43) * 60),
+      teamId,
+      type: "Card",
+      detail: seededRandom(seed + 44) < 0.15 ? "Red Card" : "Yellow Card",
+      player: players[0],
+    });
+  }
+
+  if (seededRandom(seed + 51) < 0.9) {
+    const homeSide = seededRandom(seed + 52) < 0.5;
+    const teamId = homeSide ? match.homeTeam.id : match.awayTeam.id;
+    const players = homeSide ? homePlayers : awayPlayers;
+    events.push({
+      minute: 46 + Math.floor(seededRandom(seed + 53) * 40),
+      teamId,
+      type: "Subst",
+      detail: "Substitution",
+      player: players[1],
+      comments: `in: ${players[2]}`,
+    });
+  }
+
+  return events.sort((a, b) => a.minute - b.minute);
+}
+
 export function getMatchesForToday(): Match[] {
   return ALL_ROUNDS[LEAGUE.currentRound - 1];
 }
@@ -273,6 +355,9 @@ export function getMatchById(id: number): MatchDetail | undefined {
     stats,
     lineupHome: buildLineup(base.homeTeam.id, seed),
     lineupAway: buildLineup(base.awayTeam.id, seed + 100),
+    homeCoach: COACHES[base.homeTeam.id],
+    awayCoach: COACHES[base.awayTeam.id],
+    events: buildEvents(base, seed),
     referee: "A. Taylor",
     attendance: `${(52_000 + Math.floor(seededRandom(seed + 9) * 15_000)).toLocaleString("id-ID")}`,
   };

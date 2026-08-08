@@ -6,8 +6,8 @@ import {
 } from "@/components/ui/icons";
 
 export const NAV_ITEMS = [
-  { href: "/", labelKey: "nav.live", icon: LiveIcon },
-  { href: "/schedule", labelKey: "nav.schedule", icon: CalendarIcon },
-  { href: "/standings", labelKey: "nav.standings", icon: TrophyIcon },
-  { href: "/stats", labelKey: "nav.stats", icon: ChartIcon },
+  { href: "/", label: "Skor", icon: LiveIcon },
+  { href: "/schedule", label: "Jadwal", icon: CalendarIcon },
+  { href: "/standings", label: "Klasemen", icon: TrophyIcon },
+  { href: "/stats", label: "Statistik", icon: ChartIcon },
 ];

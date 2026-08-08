@@ -232,6 +232,7 @@ export const footballProvider: SportsProvider = {
         footballGet<{
           response: {
             team: { id: number };
+            coach: { id: number | null; name: string | null } | null;
             startXI: { player: { id: number | null; name: string | null; pos: string | null; number: number | null } }[];
           }[];
         }>(`/fixtures/lineups?fixture=${id}`, REVALIDATE_STATIC),
@@ -279,6 +280,9 @@ export const footballProvider: SportsProvider = {
         }));
       };
 
+      const coachName = (teamId: number): string | undefined =>
+        lineupRes.response?.find((l) => l.team.id === teamId)?.coach?.name ?? undefined;
+
       let eventsResponse: APIEvent[] = [];
       try {
         const res = await footballGet<{ response: APIEvent[] }>(
@@ -310,6 +314,8 @@ export const footballProvider: SportsProvider = {
         stats,
         lineupHome: lineup(homeId),
         lineupAway: lineup(awayId),
+        homeCoach: coachName(homeId),
+        awayCoach: coachName(awayId),
         events,
       } as MatchDetail;
     }, async () => mockProvider.getMatch(id));

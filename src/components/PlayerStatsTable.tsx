@@ -1,31 +1,25 @@
-import type { Translator } from "@/lib/i18n";
 import type { PlayerStat } from "@/types";
 
 export default function PlayerStatsTable({
   players,
   metric,
-  t,
 }: {
   players: PlayerStat[];
   metric: "goals" | "assists";
-  t: Translator;
 }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-surface">
       <div className="border-b border-border/60 bg-surface-hover/50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted">
-        {metric === "goals" ? t("stats.topScorers") : t("stats.topAssists")} —
-        Premier League
+        {metric === "goals" ? "Top Scorers" : "Top Assists"} — Premier League
       </div>
       <table className="w-full text-sm">
         <thead>
           <tr className="text-left text-xs uppercase tracking-wide text-muted">
             <th className="px-4 py-2.5">#</th>
-            <th className="px-4 py-2.5">{t("stats.player")}</th>
-            <th className="hidden px-2 py-2.5 text-center sm:table-cell">
-              {t("stats.apps")}
-            </th>
+            <th className="px-4 py-2.5">Pemain</th>
+            <th className="hidden px-2 py-2.5 text-center sm:table-cell">Main</th>
             <th className="px-4 py-2.5 text-center">
-              {metric === "goals" ? t("stats.goals") : t("stats.assists")}
+              {metric === "goals" ? "Gol" : "Assist"}
             </th>
           </tr>
         </thead>

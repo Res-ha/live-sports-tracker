@@ -1,26 +1,20 @@
 import type { Metadata } from "next";
 import { LEAGUE } from "@/lib/api/league";
-import { getDictionary } from "@/lib/i18n";
 import ScheduleBrowser from "@/components/ScheduleBrowser";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getDictionary();
-  return {
-    title: t("schedule.title"),
-    description: `${LEAGUE.name} · ${t("schedule.subtitle", { season: LEAGUE.season })}`,
-  };
-}
+export const metadata: Metadata = {
+  title: "Jadwal",
+  description: "Jadwal pertandingan Premier League per pekan.",
+};
 
-export default async function SchedulePage() {
-  const t = await getDictionary();
+export default function SchedulePage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">
-          {t("schedule.title")}
-        </h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">Jadwal Pertandingan</h1>
         <p className="text-sm text-muted">
-          {t("schedule.subtitle", { season: LEAGUE.season })}
+          Pertandingan per pekan musim {LEAGUE.season}. Klik pertandingan untuk melihat
+          detail lengkap.
         </p>
       </div>
       <ScheduleBrowser />

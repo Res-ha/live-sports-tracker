@@ -2,7 +2,6 @@
 
 import { StarIcon } from "@/components/ui/icons";
 import { useFavorites, toggleFavorite } from "@/lib/use-favorites";
-import { useLanguage } from "@/components/LanguageProvider";
 
 export default function FavoriteButton({
   teamId,
@@ -13,7 +12,6 @@ export default function FavoriteButton({
 }) {
   const favorites = useFavorites();
   const isFav = favorites.includes(teamId);
-  const { t } = useLanguage();
 
   function handleToggle(e: React.MouseEvent) {
     e.preventDefault();
@@ -25,9 +23,9 @@ export default function FavoriteButton({
     <button
       type="button"
       onClick={handleToggle}
-      aria-label={isFav ? t("fav.remove") : t("fav.add")}
+      aria-label={isFav ? "Hapus dari favorit" : "Favoritkan tim"}
       aria-pressed={isFav}
-      title={isFav ? t("fav.remove") : t("fav.add")}
+      title={isFav ? "Hapus dari favorit" : "Favoritkan tim"}
       className={`shrink-0 transition-colors ${
         isFav ? "text-amber-400" : "text-muted hover:text-amber-400"
       }`}

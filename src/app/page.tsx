@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { LEAGUE } from "@/lib/api/league";
-import { getDictionary } from "@/lib/i18n";
-import LiveMatches from "@/components/LiveMatches";
+import ResultsList from "@/components/ResultsList";
 import { TeamCrest } from "@/components/ui/TeamCrest";
 import {
   AssistIcon,
@@ -19,7 +18,6 @@ export default async function HomePage() {
     api.getTopScorers(),
     api.getTopAssists(),
   ]);
-  const t = await getDictionary();
   const top5 = standings.slice(0, 5);
   const champion = standings[0];
   const topScorer = scorers[0];
@@ -29,20 +27,20 @@ export default async function HomePage() {
     <div className="space-y-8">
       <section className="flex flex-col gap-1 rounded-2xl border border-border bg-gradient-to-br from-surface to-surface-hover p-6">
         <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent">
-          {t("home.badge")}
+          Musim sudah berakhir
         </span>
         <h1 className="text-2xl font-extrabold tracking-tight">
-          {t("home.title", { league: LEAGUE.name, season: LEAGUE.season })}
+          {LEAGUE.name} · Musim {LEAGUE.season}
         </h1>
         <p className="text-sm text-muted">
-          {t("home.subtitle", { league: LEAGUE.name, season: LEAGUE.season })}
+          Hasil final, jadwal, dan klasemen Premier League {LEAGUE.season} sesuai API-Football.
         </p>
       </section>
 
       <section>
         <div className="mb-3 flex items-center gap-2">
           <h2 className="text-lg font-bold">
-            {t("home.summary", { season: LEAGUE.season })}
+            Rangkuman Musim {LEAGUE.season}
           </h2>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -52,15 +50,13 @@ export default async function HomePage() {
               className="rounded-2xl border border-ucl/40 bg-ucl/10 p-4 transition-colors hover:bg-ucl/20"
             >
               <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-ucl">
-                <TrophyIcon width={16} height={16} /> {t("home.champion")}
+                <TrophyIcon width={16} height={16} /> Juara
               </span>
               <div className="mt-3 flex items-center gap-3">
                 <TeamCrest team={champion.team} size={44} />
                 <div>
                   <div className="font-bold">{champion.team.name}</div>
-                  <div className="text-xs text-muted">
-                    {t("home.points", { points: champion.points })}
-                  </div>
+                  <div className="text-xs text-muted">{champion.points} poin</div>
                 </div>
               </div>
             </Link>
@@ -69,13 +65,12 @@ export default async function HomePage() {
           {topScorer ? (
             <div className="rounded-2xl border border-border bg-surface p-4">
               <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-accent">
-                <BallIcon width={16} height={16} /> {t("home.topScorer")}
+                <BallIcon width={16} height={16} /> Top Skor
               </span>
               <div className="mt-3">
                 <div className="font-bold">{topScorer.name}</div>
                 <div className="text-xs text-muted">
-                  {t("home.goals", { goals: topScorer.goals })} ·{" "}
-                  {topScorer.team.name}
+                  {topScorer.goals} gol · {topScorer.team.name}
                 </div>
               </div>
             </div>
@@ -84,13 +79,12 @@ export default async function HomePage() {
           {topAssister ? (
             <div className="rounded-2xl border border-border bg-surface p-4">
               <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-accent">
-                <AssistIcon width={16} height={16} /> {t("home.topAssist")}
+                <AssistIcon width={16} height={16} /> Top Assist
               </span>
               <div className="mt-3">
                 <div className="font-bold">{topAssister.name}</div>
                 <div className="text-xs text-muted">
-                  {t("home.assists", { assists: topAssister.assists })} ·{" "}
-                  {topAssister.team.name}
+                  {topAssister.assists} assist · {topAssister.team.name}
                 </div>
               </div>
             </div>
@@ -98,19 +92,19 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <LiveMatches />
+      <ResultsList title="Hasil Pertandingan" />
 
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-lg font-bold">
             <TrophyIcon width={18} height={18} className="text-accent" />
-            {t("home.top5")}
+            Top 5 Klasemen
           </h2>
           <Link
             href="/standings"
             className="flex items-center gap-0.5 text-sm font-semibold text-accent hover:underline"
           >
-            {t("home.standingsLink")} <ChevronRightIcon width={16} height={16} />
+            Klasemen lengkap <ChevronRightIcon width={16} height={16} />
           </Link>
         </div>
         <div className="rounded-2xl border border-border bg-surface">

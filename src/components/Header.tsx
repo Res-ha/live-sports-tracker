@@ -3,14 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/lib/nav";
-import { ShieldIcon, SunIcon, MoonIcon, GlobeIcon } from "@/components/ui/icons";
-import { useTheme } from "@/components/ThemeProvider";
-import { useLanguage } from "@/components/LanguageProvider";
+import { ShieldIcon } from "@/components/ui/icons";
 
 export default function Header() {
   const pathname = usePathname();
-  const { theme, toggle } = useTheme();
-  const { lang, setLang, t } = useLanguage();
 
   function isActive(href: string) {
     return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -29,7 +25,7 @@ export default function Header() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {NAV_ITEMS.map(({ href, labelKey }) => (
+          {NAV_ITEMS.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
@@ -37,36 +33,10 @@ export default function Header() {
                 isActive(href) ? "bg-surface text-accent" : "text-muted hover:text-foreground"
               }`}
             >
-              {t(labelKey)}
+              {label}
             </Link>
           ))}
         </nav>
-
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setLang(lang === "id" ? "en" : "id")}
-            aria-label="Ganti bahasa"
-            title={lang === "id" ? "Switch to English" : "Ganti ke Indonesia"}
-            className="flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-bold text-muted transition-colors hover:text-foreground"
-          >
-            <GlobeIcon width={16} height={16} />
-            {lang === "id" ? "ID" : "EN"}
-          </button>
-          <button
-            type="button"
-            onClick={toggle}
-            aria-label={theme === "dark" ? "Mode terang" : "Mode gelap"}
-            title={theme === "dark" ? "Mode terang" : "Mode gelap"}
-            className="grid h-9 w-9 place-items-center rounded-lg text-muted transition-colors hover:text-foreground"
-          >
-            {theme === "dark" ? (
-              <SunIcon width={18} height={18} />
-            ) : (
-              <MoonIcon width={18} height={18} />
-            )}
-          </button>
-        </div>
       </div>
     </header>
   );

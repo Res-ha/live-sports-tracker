@@ -4,47 +4,58 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { TEAMS } from "@/lib/api/league";
-import { formatKickoffDate, formatKickoffTime } from "@/lib/format";
 import type { Match } from "@/types";
 import { TeamCrest } from "@/components/ui/TeamCrest";
 import { StarIcon, UserIcon } from "@/components/ui/icons";
 import { useFavorites } from "@/lib/use-favorites";
-import { useLanguage } from "@/components/LanguageProvider";
 
-function NextMatch({ teamId }: { teamId: number }) {
+function LastResult({ teamId }: { teamId: number }) {
   const [match, setMatch] = useState<Match | null>(null);
-  const { t } = useLanguage();
 
   useEffect(() => {
     let cancelled = false;
     api.getTeamFixtures(teamId).then((list) => {
       if (cancelled) return;
-      setMatch(list.find((m) => m.status === "SCHEDULED") ?? null);
+      const last = [...list]
+        .filter((m) => m.status === "FT")
+        .sort((a, b) => b.kickoff.localeCompare(a.kickoff))[0];
+      setMatch(last ?? null);
     });
     return () => {
       cancelled = true;
     };
   }, [teamId]);
 
-  if (!match)
-    return <span className="text-xs text-muted">{t("profile.finding")}</span>;
+  if (!match) return <span className="text-xs text-muted">Belum ada hasil.</span>;
 
   const opponent = match.homeTeam.id === teamId ? match.awayTeam : match.homeTeam;
+  const homeScore = match.homeScore ?? 0;
+  const awayScore = match.awayScore ?? 0;
+  const isHome = match.homeTeam.id === teamId;
+  const outcome = isHome
+    ? homeScore > awayScore
+      ? "Menang"
+      : homeScore === awayScore
+        ? "Seri"
+        : "Kalah"
+    : awayScore > homeScore
+      ? "Menang"
+      : awayScore === homeScore
+        ? "Seri"
+        : "Kalah";
 
   return (
     <Link
       href={`/matches/${match.id}`}
       className="text-xs text-muted transition-colors hover:text-accent"
     >
-      {t("profile.nextMatch", { team: opponent.name })} ·{" "}
-      {formatKickoffDate(match.kickoff)} {formatKickoffTime(match.kickoff)}
+      Terakhir: vs {opponent.name} · {outcome} {homeScore}-{awayScore}
     </Link>
   );
 }
 
 export default function ProfilePage() {
   const favorites = useFavorites();
-  const { t } = useLanguage();
   const teams = TEAMS.filter((t) => favorites.includes(t.id));
 
   return (
@@ -54,35 +65,37 @@ export default function ProfilePage() {
           <UserIcon width={26} height={26} />
         </span>
         <div>
-          <h1 className="text-xl font-extrabold tracking-tight">
-            {t("profile.title")}
-          </h1>
-          <p className="text-sm text-muted">{t("profile.subtitle")}</p>
+          <h1 className="text-xl font-extrabold tracking-tight">Profil Saya</h1>
+          <p className="text-sm text-muted">
+            Favorit Anda disimpan di perangkat ini.
+          </p>
         </div>
       </section>
 
       <section>
         <h2 className="mb-3 flex items-center gap-2 text-lg font-bold">
           <StarIcon filled width={18} height={18} className="text-amber-400" />
-          {t("profile.favTitle")}
+          Tim Favorit
         </h2>
 
         {teams.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
-            <p className="text-sm text-muted">{t("profile.favEmpty")}</p>
-            <p className="mt-1 text-sm text-muted">{t("profile.favEmptyHint")}</p>
+            <p className="text-sm text-muted">Anda belum memiliki tim favorit.</p>
+            <p className="mt-1 text-sm text-muted">
+              Jelajahi klasemen dan tekan bintang untuk menyimpan tim.
+            </p>
             <div className="mt-4 flex justify-center gap-3">
               <Link
                 href="/standings"
                 className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-background transition-colors hover:bg-accent-strong"
               >
-                {t("profile.viewStandings")}
+                Lihat Klasemen
               </Link>
               <Link
                 href="/schedule"
                 className="rounded-lg bg-surface-hover px-4 py-2 text-sm font-semibold transition-colors hover:bg-border"
               >
-                {t("profile.viewSchedule")}
+                Lihat Jadwal
               </Link>
             </div>
           </div>
@@ -98,7 +111,7 @@ export default function ProfilePage() {
                   <TeamCrest team={team} size={44} />
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-bold">{team.name}</div>
-                    <NextMatch teamId={team.id} />
+                    <LastResult teamId={team.id} />
                   </div>
                   <StarIcon filled width={18} height={18} className="text-amber-400" />
                 </div>

@@ -1,12 +1,9 @@
-"use client";
-
 import Link from "next/link";
 import type { Match } from "@/types";
 import { formatKickoffDate, formatKickoffTime } from "@/lib/format";
 import { TeamCrest } from "@/components/ui/TeamCrest";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import FavoriteButton from "@/components/FavoriteButton";
-import { useLanguage } from "@/components/LanguageProvider";
 
 function ScoreCenter({ match }: { match: Match }) {
   if (match.status === "SCHEDULED") {
@@ -30,17 +27,13 @@ function ScoreCenter({ match }: { match: Match }) {
 }
 
 export default function MatchCard({ match }: { match: Match }) {
-  const { t } = useLanguage();
-
   return (
     <Link
       href={`/matches/${match.id}`}
       className="block rounded-2xl border border-border bg-surface transition-colors hover:border-accent/50 hover:bg-surface-hover"
     >
       <div className="flex items-center justify-between border-b border-border/60 px-4 py-2.5">
-        <span className="text-xs text-muted">
-          {t("match.round", { round: match.round })}
-        </span>
+        <span className="text-xs text-muted">Pekan {match.round}</span>
         <span className="truncate text-xs text-muted">{match.venue}</span>
       </div>
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-4">

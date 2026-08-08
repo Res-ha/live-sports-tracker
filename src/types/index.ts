@@ -70,6 +70,8 @@ export interface MatchEvent {
 export interface MatchDetail extends Match {
   referee?: string;
   attendance?: string;
+  homeCoach?: string;
+  awayCoach?: string;
   stats: MatchStatPair[];
   lineupHome: LineupPlayer[];
   lineupAway: LineupPlayer[];

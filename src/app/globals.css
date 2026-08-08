@@ -1,48 +1,18 @@
 @import "tailwindcss";
 
-:root {
-  --background: #0f172a;
-  --surface: #1e293b;
-  --surface-hover: #273449;
-  --border: #334155;
-  --foreground: #f8fafc;
-  --muted: #94a3b8;
-  --accent: #38bdf8;
-  --accent-strong: #0ea5e9;
-  --live: #ef4444;
-  --ht: #f59e0b;
-  --success: #22c55e;
-  --ucl: #818cf8;
-}
-
-[data-theme="light"] {
-  --background: #f8fafc;
-  --surface: #ffffff;
-  --surface-hover: #f1f5f9;
-  --border: #e2e8f0;
-  --foreground: #0f172a;
-  --muted: #64748b;
-  --accent: #0284c7;
-  --accent-strong: #0369a1;
-  --live: #dc2626;
-  --ht: #d97706;
-  --success: #16a34a;
-  --ucl: #6366f1;
-}
-
 @theme {
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-surface-hover: var(--surface-hover);
-  --color-border: var(--border);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-accent: var(--accent);
-  --color-accent-strong: var(--accent-strong);
-  --color-live: var(--live);
-  --color-ht: var(--ht);
-  --color-success: var(--success);
-  --color-ucl: var(--ucl);
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-hover: #273449;
+  --color-border: #334155;
+  --color-foreground: #f8fafc;
+  --color-muted: #94a3b8;
+  --color-accent: #38bdf8;
+  --color-accent-strong: #0ea5e9;
+  --color-live: #ef4444;
+  --color-ht: #f59e0b;
+  --color-success: #22c55e;
+  --color-ucl: #818cf8;
 }
 
 @theme inline {
