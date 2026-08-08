@@ -8,13 +8,20 @@ Menonjolkan 3 pilar utama PRD: **External REST API**, **Management Data**, dan
 
 ## Fitur
 
-- **Hasil Pertandingan** — daftar hasil final pekan terakhir di beranda.
-- **Match Center** — detail skor, statistik pertandingan, dan susunan pemain.
-- **Jadwal** — master-detail per pekan (1–38): list per tanggal, klik match untuk preview/squad/stats/table/info; filter berdasarkan tim.
+- **Hasil Pertandingan** — beranda menampilkan hasil final pekan ke-38 beserta
+  rangkuman musim (juara, top skor, top assist, top 5 klasemen).
+- **Match Center** (`/matches/[id]`) — skor, pencetak gol + assist, statistik
+  pertandingan, susunan pemain + pelatih, linimasa, dan info pertandingan
+  (wasit, penonton).
+- **Jadwal Master-Detail** — navigasi pekan 1–38 dengan list per tanggal
+  (jam kickoff, crest, skor). Klik pertandingan untuk membuka panel detail
+  ber-tab **Preview / Squad / Stats / Table / Info** — panel sticky di desktop,
+  auto-scroll di mobile. Ada filter berdasarkan tim.
 - **Klasemen** — tabel 20 klub dengan highlight tim favorit & zona Champions League.
 - **Statistik** — top scorers dan top assists.
 - **Tim Favorit** — bookmark tim tersimpan di `localStorage` (mode tamu, tanpa akun).
-- Tema gelap sporty, responsif (bottom nav di mobile, top nav di desktop).
+- **Responsif & Lokalisasi** — bottom nav di mobile / top nav di desktop; nama tim
+  pendek di layar kecil; tanggal & jam format Indonesia (`id-ID`, 24-jam).
 
 ## Tech Stack
 
@@ -31,19 +38,28 @@ Menonjolkan 3 pilar utama PRD: **External REST API**, **Management Data**, dan
 ```
 src/
 ├── app/
-│   ├── page.tsx            # Home · Hasil & rangkuman musim
-│   ├── standings|schedule|stats/
-│   ├── teams/[id]/         # Profil tim
-│   ├── matches/[id]/       # Match Center
-│   ├── profile/            # Tim favorit (guest)
-│   └── api/                # Backend: proxy data olahraga
-├── components/             # Header, BottomNav, MatchCard, MatchDetailPanel, dll.
+│   ├── page.tsx             # Beranda: hasil pekan terakhir + rangkuman musim
+│   ├── schedule/            # Jadwal master-detail (per pekan · per tanggal)
+│   ├── standings/           # Klasemen 20 klub
+│   ├── stats/               # Top scorers & top assists
+│   ├── teams/[id]/          # Profil tim (form + jadwal terkait)
+│   ├── matches/[id]/        # Match Center
+│   ├── profile/             # Tim favorit (guest)
+│   ├── loading.tsx / not-found.tsx
+│   └── api/                 # Route Handlers proxy API-Football
+├── components/
+│   ├── ui/                  # TeamCrest, StatusBadge, Skeleton, icons
+│   ├── match/               # ScoreHeader, GoalScorers, MatchStats, Lineups,
+│   │                        #   MatchTimeline, MatchInfo, MatchDetailPanel
+│   ├── schedule/            # DateGroup, MatchRow, MatchTabs (master-detail)
+│   ├── Header · BottomNav · MatchCard · ResultsList · StandingsTable · PlayerStatsTable
 ├── lib/
-│   ├── sports/             # provider interface + mock + API-Football
-│   ├── api/                # facade isomorphic (server direct / client via route)
-│   ├── use-favorites.ts    # store favorit (useSyncExternalStore)
-│   └── format.ts
-└── types/                  # model data
+│   ├── sports/              # interface (types), football (API), mock + pemilihan provider
+│   ├── api/                 # facade isomorphic + league.ts (konstanta) + mock.ts
+│   ├── nav.ts               # item navigasi
+│   ├── use-favorites.ts     # store favorit (useSyncExternalStore)
+│   └── format.ts            # format tanggal & jam (id-ID)
+└── types/                   # model data
 ```
 
 ## Menjalankan
@@ -78,8 +94,11 @@ seluruh fitur tetap bisa didemokan. Untuk data asli:
 
 | Method & Path | Fungsi |
 |---|---|
-| `GET /api/fixtures/today`, `/api/fixtures?round=N` | Skor & jadwal |
-| `GET /api/standings`, `/api/stats/top-scorers` | Klasemen & statistik |
-| `GET /api/teams/[id]/fixtures`, `/api/teams/[id]/form` | Data tim |
+| `GET /api/fixtures/today`, `/api/fixtures?round=N` | Hasil pekan & jadwal |
+| `GET /api/fixtures/[id]` | Detail pertandingan (skor, statistik, lineup, event) |
+| `GET /api/standings` | Klasemen |
+| `GET /api/stats/top-scorers`, `/api/stats/top-assists` | Statistik pemain |
+| `GET /api/teams`, `/api/teams/[id]` | Daftar & detail tim |
+| `GET /api/teams/[id]/fixtures`, `/api/teams/[id]/form` | Jadwal & form tim |
 
 Dokumen lengkap: [PRD.md](./PRD.md).
