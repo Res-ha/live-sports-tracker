@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { clientApi } from "@/lib/client-api";
 import type { MatchDetail, StandingsRow } from "@/types";
 import MatchTabs, { type MatchTab } from "@/components/schedule/MatchTabs";
 import ScoreHeader from "./ScoreHeader";
@@ -40,7 +40,7 @@ export default function MatchDetailPanel({
   useEffect(() => {
     if (activeTab !== "table" || standings) return;
     let cancelled = false;
-    api
+    clientApi
       .getStandings()
       .then((rows) => {
         if (!cancelled) setStandings(rows);

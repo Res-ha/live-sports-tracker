@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { clientApi } from "@/lib/client-api";
 import { TEAMS } from "@/lib/api/league";
 import type { Match } from "@/types";
 import { TeamCrest } from "@/components/ui/TeamCrest";
@@ -14,7 +14,7 @@ function LastResult({ teamId }: { teamId: number }) {
 
   useEffect(() => {
     let cancelled = false;
-    api.getTeamFixtures(teamId).then((list) => {
+    clientApi.getTeamFixtures(teamId).then((list) => {
       if (cancelled) return;
       const last = [...list]
         .filter((m) => m.status === "FT")

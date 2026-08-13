@@ -29,7 +29,7 @@ Menonjolkan 3 pilar utama PRD: **External REST API**, **Management Data**, dan
 |---|---|
 | Frontend | Next.js 16 (App Router) + TypeScript + Tailwind CSS v4 |
 | Backend | Next.js Route Handlers (`/api/*`) |
-| Data fetching | Server Components + fetch client (sekali), provider-switchable |
+| Data fetching | Server Components (halaman data musim final di-prerender statis saat build) + fetch client tipis; provider-switchable |
 | Sports API | API-Football (api-sports.io) dengan **fallback otomatis ke data mock** jika key kosong |
 | Persistensi | `localStorage` (favorit) |
 
@@ -55,7 +55,8 @@ src/
 │   ├── Header · BottomNav · MatchCard · ResultsList · StandingsTable · PlayerStatsTable
 ├── lib/
 │   ├── sports/              # interface (types), football (API), mock + pemilihan provider
-│   ├── api/                 # facade isomorphic + league.ts (konstanta) + mock.ts
+│   ├── api/                 # facade server + league.ts (konstanta) + mock.ts
+│   ├── client-api.ts        # facade fetch tipis untuk komponen client (tanpa provider)
 │   ├── nav.ts               # item navigasi
 │   ├── use-favorites.ts     # store favorit (useSyncExternalStore)
 │   └── format.ts            # format tanggal & jam (id-ID)

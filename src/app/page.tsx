@@ -10,8 +10,6 @@ import {
   TrophyIcon,
 } from "@/components/ui/icons";
 
-export const dynamic = "force-dynamic";
-
 export default async function HomePage() {
   const [standings, scorers, assisters] = await Promise.all([
     api.getStandings(),

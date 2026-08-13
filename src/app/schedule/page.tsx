@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { api } from "@/lib/api";
 import { LEAGUE } from "@/lib/api/league";
 import ScheduleBrowser from "@/components/ScheduleBrowser";
 
@@ -7,7 +8,12 @@ export const metadata: Metadata = {
   description: "Jadwal pertandingan Premier League per pekan.",
 };
 
-export default function SchedulePage() {
+export default async function SchedulePage() {
+  const [initial, teams] = await Promise.all([
+    api.getRound(LEAGUE.currentRound),
+    api.getTeams(),
+  ]);
+
   return (
     <div className="space-y-5">
       <div>
@@ -17,7 +23,7 @@ export default function SchedulePage() {
           detail lengkap.
         </p>
       </div>
-      <ScheduleBrowser />
+      <ScheduleBrowser initial={initial} initialTeams={teams} />
     </div>
   );
 }

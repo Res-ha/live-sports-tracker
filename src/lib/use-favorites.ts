@@ -36,7 +36,7 @@ function getSnapshot(): number[] {
 }
 
 function getServerSnapshot(): number[] {
-  return [];
+  return cached;
 }
 
 export function useFavorites(): number[] {

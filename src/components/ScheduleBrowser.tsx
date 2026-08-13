@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { api } from "@/lib/api";
+import { clientApi } from "@/lib/client-api";
 import { LEAGUE } from "@/lib/api/league";
 import type { Match, MatchDetail, Team } from "@/types";
 import DateGroup from "@/components/schedule/DateGroup";
@@ -30,12 +30,24 @@ interface RoundData {
   range: string;
 }
 
-export default function ScheduleBrowser() {
+interface ScheduleBrowserProps {
+  initial?: { matches: Match[]; range: string };
+  initialTeams?: Team[];
+}
+
+export default function ScheduleBrowser({
+  initial,
+  initialTeams,
+}: ScheduleBrowserProps) {
   const [round, setRound] = useState(LEAGUE.currentRound);
-  const [data, setData] = useState<RoundData | null>(null);
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [data, setData] = useState<RoundData | null>(
+    initial ? { round: LEAGUE.currentRound, matches: initial.matches, range: initial.range } : null
+  );
+  const [teams, setTeams] = useState<Team[]>(initialTeams ?? []);
   const [teamFilter, setTeamFilter] = useState(0);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(
+    initial && initial.matches.length > 0 ? initial.matches[0].id : null
+  );
   const [detail, setDetail] = useState<{ id: number; match: MatchDetail | null } | null>(
     null
   );
@@ -44,6 +56,7 @@ export default function ScheduleBrowser() {
   >("preview");
 
   const panelRef = useRef<HTMLDivElement>(null);
+  const seededRoundsRef = useRef<number[]>(initial ? [LEAGUE.currentRound] : []);
 
   useEffect(() => {
     if (!selectedId) return;
@@ -53,21 +66,24 @@ export default function ScheduleBrowser() {
   }, [selectedId]);
 
   useEffect(() => {
+    if (initialTeams || teams.length > 0) return;
     let cancelled = false;
-    api.getTeams().then((list) => {
+    clientApi.getTeams().then((list) => {
       if (!cancelled) setTeams(list);
     });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialTeams, teams.length]);
 
   useEffect(() => {
+    if (seededRoundsRef.current.includes(round)) return;
     let cancelled = false;
-    api
+    clientApi
       .getRound(round)
       .then((res) => {
         if (cancelled) return;
+        seededRoundsRef.current = [...seededRoundsRef.current, round];
         setData({ round, matches: res.matches, range: res.range });
         if (res.matches.length > 0) setSelectedId(res.matches[0].id);
       })
@@ -82,7 +98,7 @@ export default function ScheduleBrowser() {
   useEffect(() => {
     if (!selectedId) return;
     let cancelled = false;
-    api
+    clientApi
       .getMatch(selectedId)
       .then((m) => {
         if (!cancelled) setDetail({ id: selectedId, match: m ?? null });
