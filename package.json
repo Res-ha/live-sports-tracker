@@ -7,7 +7,9 @@
     "build": "node scripts/build-static.mjs",
     "start": "next start",
     "lint": "eslint",
-    "bake": "tsx scripts/bake-data.mts"
+    "bake": "tsx scripts/bake-data.mts",
+    "preview": "npm run build && wrangler pages dev out",
+    "deploy": "npm run build && wrangler pages deploy out --project-name=live-sports-tracker"
   },
   "dependencies": {
     "next": "16.3.0",
