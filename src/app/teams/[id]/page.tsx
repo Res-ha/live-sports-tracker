@@ -11,6 +11,11 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+export async function generateStaticParams(): Promise<{ id: string }[]> {
+  const teams = await api.getTeams();
+  return teams.map((t) => ({ id: String(t.id) }));
+}
+
 const FORM_COLORS: Record<TeamResult, string> = {
   W: "bg-success text-background",
   D: "bg-ht text-background",

@@ -41,6 +41,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# cloudflare wrangler
+.wrangler/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -49,6 +52,9 @@ next-env.d.ts
 
 # local dev server logs
 /dev-server.log*
+
+# generated static data (baked at build time)
+/public/data/
 
 # ai assistant tooling (skill packs / lockfiles)
 .agents/

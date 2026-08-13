@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api } from "@/lib/api";
+import { LEAGUE } from "@/lib/api/league";
 import ScoreHeader from "@/components/match/ScoreHeader";
 import GoalScorers from "@/components/match/GoalScorers";
 import MatchStats from "@/components/match/MatchStats";
@@ -9,6 +10,15 @@ import MatchTimeline from "@/components/match/MatchTimeline";
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateStaticParams(): Promise<{ id: string }[]> {
+  const ids: string[] = [];
+  for (let round = 1; round <= LEAGUE.currentRound; round++) {
+    const data = await api.getRound(round);
+    for (const m of data.matches) ids.push(String(m.id));
+  }
+  return ids.map((id) => ({ id }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
