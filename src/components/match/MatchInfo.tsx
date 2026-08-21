@@ -15,7 +15,7 @@ function InfoRow({ label, children }: { label: string; children: ReactNode }) {
 
 export default function MatchInfo({ match }: { match: MatchDetail }) {
   return (
-    <div className="rounded-2xl border border-border bg-surface px-4">
+    <div className="rounded-[1.5rem] border border-border/80 bg-surface/80 px-4">
       <InfoRow label="Pekan">Pekan {match.round}</InfoRow>
       <div className="border-t border-border/40">
         <InfoRow label="Tanggal">{formatFullDate(new Date(match.kickoff))}</InfoRow>
@@ -54,7 +54,7 @@ export default function MatchInfo({ match }: { match: MatchDetail }) {
             <Link
               key={t.id}
               href={`/teams/${t.id}`}
-              className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-surface-hover px-3 py-2 text-sm font-semibold transition-colors hover:border-accent/50"
+              className="flex min-h-11 flex-1 items-center gap-2 rounded-xl border border-border bg-surface-hover px-3 py-2 text-sm font-semibold transition-colors hover:border-accent/50 hover:text-accent"
             >
               <TeamCrest team={t} size={24} />
               <span className="truncate">{t.name}</span>

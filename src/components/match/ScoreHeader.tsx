@@ -8,8 +8,9 @@ export default function ScoreHeader({ match }: { match: MatchDetail }) {
   const hasStarted = match.status !== "SCHEDULED";
 
   return (
-    <section className="rounded-2xl border border-border bg-gradient-to-br from-surface to-surface-hover p-4 sm:p-6">
-      <div className="mb-4 text-center text-xs text-muted">
+    <section className="relative overflow-hidden rounded-[1.5rem] border border-accent/20 bg-gradient-to-br from-surface to-surface-hover p-4 sm:p-6">
+      <div className="pointer-events-none absolute -left-16 -top-16 h-44 w-44 rounded-full bg-accent/10 blur-3xl" />
+      <div className="relative mb-5 text-center text-xs text-muted">
         {formatKickoffDate(match.kickoff)} · {formatKickoffTime(match.kickoff)} ·{" "}
         {match.venue}
       </div>
@@ -22,11 +23,11 @@ export default function ScoreHeader({ match }: { match: MatchDetail }) {
 
         <div className="text-center">
           {hasStarted ? (
-            <div className="text-4xl font-extrabold tracking-tight sm:text-5xl">
+          <div className="text-4xl font-black tracking-[-0.05em] sm:text-5xl">
               {match.homeScore} - {match.awayScore}
             </div>
           ) : (
-            <div className="text-4xl font-extrabold tracking-tight sm:text-5xl">
+            <div className="text-4xl font-black tracking-[-0.05em] sm:text-5xl">
               {formatKickoffTime(match.kickoff)}
             </div>
           )}
@@ -42,7 +43,7 @@ export default function ScoreHeader({ match }: { match: MatchDetail }) {
         </div>
       </div>
       {match.referee || match.attendance ? (
-        <div className="mt-5 flex flex-wrap justify-center gap-3 text-xs text-muted">
+        <div className="relative mt-5 flex flex-wrap justify-center gap-2 text-xs text-muted">
           {match.referee && <span>Wasit: {match.referee}</span>}
           {match.attendance && <span>Penonton: {match.attendance}</span>}
         </div>

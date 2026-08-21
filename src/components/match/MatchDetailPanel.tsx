@@ -52,20 +52,20 @@ export default function MatchDetailPanel({
   }, [activeTab, standings]);
 
   return (
-    <section className="flex h-full flex-col rounded-2xl border border-border bg-surface">
-      <header className="flex items-center justify-between border-b border-border/60 px-4 py-2.5">
-        <span className="text-xs font-semibold text-muted">Pekan {match.round}</span>
+    <section className="flex h-full flex-col rounded-[1.75rem] border border-border/80 bg-surface/85 shadow-[0_20px_60px_rgb(2_8_23/.24)]">
+      <header className="flex items-center justify-between border-b border-border/60 bg-background/20 px-4 py-3">
+        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted">Round {match.round} · Match detail</span>
         <button
           type="button"
           onClick={onClose}
           aria-label="Tutup detail"
-          className="grid h-7 w-7 place-items-center rounded-lg bg-surface-hover text-sm text-muted transition-colors hover:text-foreground"
+          className="grid h-9 w-9 place-items-center rounded-xl bg-surface-hover text-sm text-muted transition-colors hover:bg-live/10 hover:text-live"
         >
           ✕
         </button>
       </header>
 
-      <div className="flex-1 space-y-5 overflow-y-auto p-4 lg:max-h-[calc(100vh-2rem)] sm:p-5">
+      <div className="flex-1 space-y-5 overflow-y-auto p-4 lg:max-h-[calc(100vh-2rem)] sm:p-6">
         <ScoreHeader match={match} />
         <MatchTabs active={activeTab} onChange={onTabChange} />
 

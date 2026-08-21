@@ -8,6 +8,7 @@ import DateGroup from "@/components/schedule/DateGroup";
 import MatchDetailPanel from "@/components/match/MatchDetailPanel";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
+import { Badge } from "@/components/ui/Badge";
 
 function RowSkeleton() {
   return <Skeleton className="h-11 w-full" />;
@@ -15,7 +16,7 @@ function RowSkeleton() {
 
 function PanelSkeleton() {
   return (
-    <div className="space-y-3 rounded-2xl border border-border bg-surface p-4">
+    <div className="space-y-3 rounded-[1.5rem] border border-border/80 bg-surface/80 p-5">
       <Skeleton className="h-5 w-32" />
       <Skeleton className="h-32 w-full" />
       <Skeleton className="h-9 w-full" />
@@ -165,20 +166,20 @@ export default function ScheduleBrowser({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3">
+      <div className="flex items-center justify-between rounded-[1.5rem] border border-border/80 bg-surface/80 px-3 py-3 shadow-[0_14px_40px_rgb(2_8_23/.16)] sm:px-4">
         <button
           type="button"
           onClick={() => handleRoundChange(Math.max(1, round - 1))}
           disabled={round <= 1}
           aria-label="Pekan sebelumnya"
           title="Pekan sebelumnya"
-          className="grid h-9 w-9 place-items-center rounded-lg bg-surface-hover text-muted transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+          className="grid h-11 w-11 place-items-center rounded-xl bg-surface-hover text-muted transition-colors hover:bg-accent/10 hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ChevronLeftIcon width={18} height={18} />
         </button>
         <div className="text-center">
-          <div className="font-bold">Pekan ke-{round}</div>
-          <div className="text-xs text-muted">{range}</div>
+          <Badge tone="accent" className="px-2 py-0.5 text-[9px]">Round {round}</Badge>
+          <div className="mt-1 text-xs text-muted">{range || "Memuat tanggal…"}</div>
         </div>
         <button
           type="button"
@@ -186,22 +187,23 @@ export default function ScheduleBrowser({
           disabled={round >= 38}
           aria-label="Pekan berikutnya"
           title="Pekan berikutnya"
-          className="grid h-9 w-9 place-items-center rounded-lg bg-surface-hover text-muted transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+          className="grid h-11 w-11 place-items-center rounded-xl bg-surface-hover text-muted transition-colors hover:bg-accent/10 hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ChevronRightIcon width={18} height={18} />
         </button>
       </div>
 
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <div className="space-y-4">
           <label className="block">
-            <span className="mb-1.5 block text-xs font-semibold text-muted">
-              Filter berdasarkan tim
+            <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.16em] text-muted">
+              Fokus pertandingan
             </span>
             <select
               value={teamFilter}
               onChange={(e) => handleFilterChange(Number(e.target.value))}
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none transition-colors focus:border-accent"
+              aria-label="Filter pertandingan berdasarkan tim"
+              className="min-h-11 w-full rounded-xl border border-border/80 bg-surface/80 px-3 py-2.5 text-sm outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/15"
             >
               <option value={0}>Semua tim</option>
               {teams.map((t) => (
@@ -231,7 +233,7 @@ export default function ScheduleBrowser({
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-border bg-surface p-10 text-center text-sm text-muted">
+            <div className="rounded-[1.5rem] border border-dashed border-border bg-surface/60 p-10 text-center text-sm text-muted">
               {teamFilter
                 ? "Tidak ada pertandingan tim ini pada pekan tersebut."
                 : "Tidak ada pertandingan pada pekan ini."}
@@ -250,7 +252,7 @@ export default function ScheduleBrowser({
               onClose={handleClose}
             />
           ) : (
-            <div className="rounded-2xl border border-border bg-surface p-10 text-center text-sm text-muted">
+            <div className="rounded-[1.5rem] border border-dashed border-border bg-surface/60 p-10 text-center text-sm text-muted">
               Pilih pertandingan untuk melihat detail.
             </div>
           )}

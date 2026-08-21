@@ -8,7 +8,7 @@ function GoalColumn({
   scorers: MatchEvent[];
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-surface p-4">
+    <div className="rounded-[1.25rem] border border-border/80 bg-surface/80 p-4">
       <div className="mb-2 text-sm font-bold">{teamName}</div>
       {scorers.length === 0 ? (
         <div className="text-sm text-muted">Tidak ada gol</div>

@@ -38,7 +38,7 @@ export default function MatchStats({ match }: { match: MatchDetail }) {
   return (
     <section>
       <h2 className="mb-3 text-lg font-bold">Statistik Pertandingan</h2>
-      <div className="space-y-4 rounded-2xl border border-border bg-surface p-5">
+      <div className="space-y-5 rounded-[1.5rem] border border-border/80 bg-surface/80 p-5">
         {match.stats.map((s) => (
           <StatBar key={s.label} label={s.label} home={s.home} away={s.away} />
         ))}

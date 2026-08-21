@@ -31,7 +31,7 @@ export default function MatchTimeline({ match }: { match: MatchDetail }) {
   return (
     <section>
       <h2 className="mb-3 text-lg font-bold">Linimasa</h2>
-      <div className="rounded-2xl border border-border bg-surface p-5">
+      <div className="rounded-[1.5rem] border border-border/80 bg-surface/80 p-5">
         <ul>
           {events.map((e, i) => {
             const teamName =

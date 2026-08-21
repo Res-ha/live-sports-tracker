@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0f172a;
-  --color-surface: #1e293b;
-  --color-surface-hover: #273449;
-  --color-border: #334155;
-  --color-foreground: #f8fafc;
-  --color-muted: #94a3b8;
-  --color-accent: #38bdf8;
-  --color-accent-strong: #0ea5e9;
-  --color-live: #ef4444;
-  --color-ht: #f59e0b;
-  --color-success: #22c55e;
-  --color-ucl: #818cf8;
+  --color-background: #07111f;
+  --color-surface: #0e1c2f;
+  --color-surface-hover: #152942;
+  --color-border: #203852;
+  --color-foreground: #eef7ff;
+  --color-muted: #8ea7bd;
+  --color-accent: #5eead4;
+  --color-accent-strong: #2dd4bf;
+  --color-live: #fb7185;
+  --color-ht: #fbbf24;
+  --color-success: #4ade80;
+  --color-ucl: #a78bfa;
 }
 
 @theme inline {
@@ -21,8 +21,42 @@
 }
 
 body {
+  min-width: 320px;
   background-color: var(--color-background);
   color: var(--color-foreground);
+}
+
+::selection {
+  background: rgb(94 234 212 / 0.26);
+  color: var(--color-foreground);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.app-grid {
+  background-image:
+    radial-gradient(circle at 10% 0%, rgb(45 212 191 / 0.16), transparent 30rem),
+    radial-gradient(circle at 92% 4%, rgb(99 102 241 / 0.13), transparent 27rem),
+    linear-gradient(rgb(142 167 189 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(142 167 189 / 0.045) 1px, transparent 1px);
+  background-position: 0 0, 100% 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
+  background-size: 44rem 44rem, 38rem 38rem, 32px 32px, 32px 32px;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgb(0 0 0 / 0.9) 12%,
+    rgb(0 0 0 / 0.9) 62%,
+    transparent 100%
+  );
+  opacity: 0.82;
+}
+
+.text-balance {
+  text-wrap: balance;
 }
 
 @keyframes live-pulse {
@@ -37,4 +71,19 @@ body {
 
 .animate-live-pulse {
   animation: live-pulse 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -4,6 +4,7 @@ export function TeamCrest({ team, size = 40 }: { team: Team; size?: number }) {
   return (
     <div
       aria-label={team.name}
+      role="img"
       className="flex shrink-0 items-center justify-center rounded-full font-bold text-white"
       style={{
         width: size,

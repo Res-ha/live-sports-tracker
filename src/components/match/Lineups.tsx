@@ -10,7 +10,7 @@ function LineupColumn({
   coach?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-surface">
+    <div className="rounded-[1.25rem] border border-border/80 bg-surface/80">
       <div className="border-b border-border/60 px-4 py-2.5 font-bold">{teamName}</div>
       <ul className="divide-y divide-border/40">
         {players.map((p) => (
