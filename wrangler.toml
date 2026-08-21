@@ -1,0 +1,2 @@
+# Keep local Pages preview reproducible across Wrangler/workerd versions.
+compatibility_date = "2026-08-18"

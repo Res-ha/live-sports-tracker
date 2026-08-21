@@ -26,7 +26,7 @@ export default function FavoriteButton({
       aria-label={isFav ? "Hapus dari favorit" : "Favoritkan tim"}
       aria-pressed={isFav}
       title={isFav ? "Hapus dari favorit" : "Favoritkan tim"}
-      className={`shrink-0 transition-colors ${
+      className={`pointer-events-auto shrink-0 transition-colors ${
         isFav ? "text-amber-400" : "text-muted hover:text-amber-400"
       }`}
     >

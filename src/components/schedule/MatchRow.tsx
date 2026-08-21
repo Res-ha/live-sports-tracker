@@ -19,10 +19,10 @@ export default function MatchRow({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`grid w-full grid-cols-[3rem_1fr_auto_1fr] items-center gap-1.5 rounded-xl border px-2.5 py-2.5 text-sm transition-colors sm:gap-2 sm:px-3 ${
+      className={`grid min-h-14 w-full grid-cols-[3rem_1fr_auto_1fr] items-center gap-1.5 rounded-[1.15rem] border px-2.5 py-2.5 text-sm transition duration-200 sm:gap-2 sm:px-3 ${
         selected
-          ? "border-accent/60 bg-accent/[0.07]"
-          : "border-border bg-surface hover:border-accent/40 hover:bg-surface-hover"
+          ? "border-accent/60 bg-accent/[0.07] shadow-[0_10px_24px_rgb(45_212_191/.08)]"
+          : "border-border/80 bg-surface/80 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-surface-hover"
       }`}
     >
       <span className="flex items-center gap-1.5 font-mono text-xs text-muted">

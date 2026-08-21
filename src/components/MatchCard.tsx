@@ -27,34 +27,48 @@ function ScoreCenter({ match }: { match: Match }) {
 }
 
 export default function MatchCard({ match }: { match: Match }) {
+  const matchLabel = `${match.homeTeam.name} vs ${match.awayTeam.name}`;
+
   return (
-    <Link
-      href={`/matches/${match.id}`}
-      className="block rounded-2xl border border-border bg-surface transition-colors hover:border-accent/50 hover:bg-surface-hover"
-    >
-      <div className="flex items-center justify-between border-b border-border/60 px-4 py-2.5">
+    <div className="group relative overflow-hidden rounded-[1.5rem] border border-border/80 bg-surface/80 transition duration-200 hover:-translate-y-0.5 hover:border-accent/45 hover:bg-surface-hover hover:shadow-[0_16px_40px_rgb(2_8_23/.24)]">
+      <Link
+        href={`/matches/${match.id}`}
+        aria-label={matchLabel}
+        className="absolute inset-0 z-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      />
+      <div className="pointer-events-none relative z-10">
+        <div className="flex items-center justify-between border-b border-border/60 bg-background/20 px-4 py-2.5">
         <span className="text-xs text-muted">Pekan {match.round}</span>
         <span className="truncate text-xs text-muted">{match.venue}</span>
-      </div>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-4">
-        <div className="flex items-center justify-end gap-2.5">
-          <span className="truncate text-right text-sm font-semibold">
+        </div>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 py-5 sm:px-5">
+          <div className="flex min-w-0 items-center justify-end gap-2.5">
+            <span className="hidden truncate text-right text-sm font-semibold sm:block">
             {match.homeTeam.name}
-          </span>
-          <div className="flex items-center gap-1">
-            <TeamCrest team={match.homeTeam} size={36} />
-            <FavoriteButton teamId={match.homeTeam.id} />
+            </span>
+            <span className="truncate text-right text-sm font-semibold sm:hidden">
+              {match.homeTeam.shortName}
+            </span>
+            <div className="flex items-center gap-1">
+              <TeamCrest team={match.homeTeam} size={36} />
+              <FavoriteButton teamId={match.homeTeam.id} />
+            </div>
           </div>
-        </div>
-        <ScoreCenter match={match} />
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1">
-            <TeamCrest team={match.awayTeam} size={36} />
-            <FavoriteButton teamId={match.awayTeam.id} />
+          <ScoreCenter match={match} />
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex items-center gap-1">
+              <TeamCrest team={match.awayTeam} size={36} />
+              <FavoriteButton teamId={match.awayTeam.id} />
+            </div>
+            <span className="hidden truncate text-sm font-semibold sm:block">
+              {match.awayTeam.name}
+            </span>
+            <span className="truncate text-sm font-semibold sm:hidden">
+              {match.awayTeam.shortName}
+            </span>
           </div>
-          <span className="truncate text-sm font-semibold">{match.awayTeam.name}</span>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

@@ -6,6 +6,8 @@ import type { TeamResult } from "@/types";
 import { TeamCrest } from "@/components/ui/TeamCrest";
 import MatchCard from "@/components/MatchCard";
 import FavoriteButton from "@/components/FavoriteButton";
+import { Badge } from "@/components/ui/Badge";
+import Reveal from "@/components/ui/Reveal";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -32,7 +34,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params;
   const team = await api.getTeam(Number(id));
   if (!team) return { title: "Tim Tidak Ditemukan" };
-  return { title: team.name, description: `Profil dan jadwal ${team.name}.` };
+  return {
+    title: team.name,
+    description: `Profil, form, klasemen, dan jadwal ${team.name} di Live PL Tracker.`,
+    alternates: { canonical: `/teams/${team.id}` },
+  };
 }
 
 export default async function TeamPage({ params }: PageProps) {
@@ -50,24 +56,21 @@ export default async function TeamPage({ params }: PageProps) {
   const row = standings.find((s) => s.team.id === team.id);
 
   return (
-    <div className="space-y-6">
-      <section className="flex flex-col gap-4 rounded-2xl border border-border bg-gradient-to-br from-surface to-surface-hover p-6 sm:flex-row sm:items-center">
+    <div className="space-y-8">
+      <Reveal>
+      <section className="relative flex flex-col gap-5 overflow-hidden rounded-[2rem] border border-accent/20 bg-gradient-to-br from-surface to-surface-hover p-6 sm:flex-row sm:items-center sm:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
         <TeamCrest team={team} size={72} />
-        <div className="flex-1">
-          <h1 className="text-2xl font-extrabold tracking-tight">{team.name}</h1>
+        <div className="relative flex-1">
+          <Badge tone="accent">Club profile</Badge>
+          <h1 className="mt-3 text-3xl font-black tracking-[-0.03em]">{team.name}</h1>
           <p className="text-sm text-muted">
             {team.city}
             {team.stadium ? ` · ${team.stadium}` : ""}
           </p>
           <div className="mt-2 flex flex-wrap gap-2 text-xs">
-            {row && (
-              <span className="rounded-full border border-accent/40 bg-accent/10 px-2.5 py-1 font-semibold text-accent">
-                Peringkat {row.position}
-              </span>
-            )}
-            <span className="rounded-full border border-border bg-surface px-2.5 py-1 font-semibold text-muted">
-              Poin {row?.points ?? 0}
-            </span>
+            {row && <Badge tone="accent">Peringkat {row.position}</Badge>}
+            <Badge tone="default">Poin {row?.points ?? 0}</Badge>
           </div>
         </div>
         <div className="flex flex-col items-center gap-1.5">
@@ -75,9 +78,11 @@ export default async function TeamPage({ params }: PageProps) {
           <span className="text-xs text-muted">Favorit</span>
         </div>
       </section>
+      </Reveal>
 
-      <section>
-        <h2 className="mb-3 text-lg font-bold">Form Terakhir</h2>
+      <Reveal delay={0.05}><section>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Momentum</p>
+        <h2 className="mt-1 mb-3 text-xl font-black">Form Terakhir</h2>
         <div className="flex gap-2">
           {form.length === 0 ? (
             <span className="text-sm text-muted">Belum ada data.</span>
@@ -86,18 +91,18 @@ export default async function TeamPage({ params }: PageProps) {
               <span
                 key={i}
                 title={FORM_LABELS[r]}
-                className={`grid h-9 w-9 place-items-center rounded-lg text-sm font-extrabold ${FORM_COLORS[r]}`}
+                className={`grid h-10 w-10 place-items-center rounded-xl text-sm font-extrabold shadow-sm ${FORM_COLORS[r]}`}
               >
                 {r}
               </span>
             ))
           )}
         </div>
-      </section>
+      </section></Reveal>
 
-      <section>
+      <Reveal delay={0.08}><section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-bold">Jadwal Terkait</h2>
+          <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Fixture trail</p><h2 className="mt-1 text-xl font-black">Jadwal Terkait</h2></div>
           <Link
             href="/schedule"
             className="text-sm font-semibold text-accent hover:underline"
@@ -110,7 +115,7 @@ export default async function TeamPage({ params }: PageProps) {
             <MatchCard key={match.id} match={match} />
           ))}
         </div>
-      </section>
+      </section></Reveal>
     </div>
   );
 }

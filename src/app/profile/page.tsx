@@ -8,6 +8,9 @@ import type { Match } from "@/types";
 import { TeamCrest } from "@/components/ui/TeamCrest";
 import { StarIcon, UserIcon } from "@/components/ui/icons";
 import { useFavorites } from "@/lib/use-favorites";
+import { Badge } from "@/components/ui/Badge";
+import { ButtonLink } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
 function LastResult({ teamId }: { teamId: number }) {
   const [match, setMatch] = useState<Match | null>(null);
@@ -60,15 +63,19 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <section className="flex items-center gap-4 rounded-2xl border border-border bg-gradient-to-br from-surface to-surface-hover p-6">
-        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-surface-hover text-accent">
+      <section className="relative overflow-hidden rounded-[2rem] border border-accent/20 bg-gradient-to-br from-surface to-surface-hover p-6 sm:p-8">
+        <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
+        <div className="relative flex items-center gap-4">
+        <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-accent/15 text-accent">
           <UserIcon width={26} height={26} />
         </span>
         <div>
-          <h1 className="text-xl font-extrabold tracking-tight">Profil Saya</h1>
+          <Badge tone="accent">Personal workspace</Badge>
+          <h1 className="mt-2 text-2xl font-black tracking-tight">Profil Saya</h1>
           <p className="text-sm text-muted">
             Favorit Anda disimpan di perangkat ini.
           </p>
+        </div>
         </div>
       </section>
 
@@ -79,33 +86,25 @@ export default function ProfilePage() {
         </h2>
 
         {teams.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
+          <Card className="border-dashed bg-surface/60 p-10 text-center">
             <p className="text-sm text-muted">Anda belum memiliki tim favorit.</p>
             <p className="mt-1 text-sm text-muted">
               Jelajahi klasemen dan tekan bintang untuk menyimpan tim.
             </p>
             <div className="mt-4 flex justify-center gap-3">
-              <Link
-                href="/standings"
-                className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-background transition-colors hover:bg-accent-strong"
-              >
-                Lihat Klasemen
-              </Link>
-              <Link
-                href="/schedule"
-                className="rounded-lg bg-surface-hover px-4 py-2 text-sm font-semibold transition-colors hover:bg-border"
-              >
-                Lihat Jadwal
-              </Link>
+              <ButtonLink href="/standings">Lihat klasemen</ButtonLink>
+              <ButtonLink href="/schedule" variant="secondary">
+                Lihat jadwal
+              </ButtonLink>
             </div>
-          </div>
+          </Card>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {teams.map((team) => (
               <Link
                 key={team.id}
                 href={`/teams/${team.id}`}
-                className="rounded-2xl border border-border bg-surface p-4 transition-colors hover:border-accent/50 hover:bg-surface-hover"
+              className="rounded-[1.5rem] border border-border/80 bg-surface/80 p-5 transition duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-surface-hover"
               >
                 <div className="flex items-center gap-3">
                   <TeamCrest team={team} size={44} />

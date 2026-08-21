@@ -7,6 +7,8 @@ import GoalScorers from "@/components/match/GoalScorers";
 import MatchStats from "@/components/match/MatchStats";
 import Lineups from "@/components/match/Lineups";
 import MatchTimeline from "@/components/match/MatchTimeline";
+import { Badge } from "@/components/ui/Badge";
+import Reveal from "@/components/ui/Reveal";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -27,7 +29,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!match) return { title: "Pertandingan Tidak Ditemukan" };
   return {
     title: `${match.homeTeam.name} vs ${match.awayTeam.name}`,
-    description: `Detail pertandingan pekan ${match.round}.`,
+    description: `${match.homeTeam.name} vs ${match.awayTeam.name}, detail pertandingan pekan ${match.round}.`,
+    alternates: { canonical: `/matches/${match.id}` },
   };
 }
 
@@ -39,23 +42,23 @@ export default async function MatchPage({ params }: PageProps) {
   const hasStarted = match.status !== "SCHEDULED";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <a
         href="/schedule"
-        className="inline-flex items-center gap-1 text-sm font-semibold text-muted transition-colors hover:text-accent"
+        className="inline-flex min-h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-muted transition-colors hover:bg-surface hover:text-accent"
       >
         <span aria-hidden>←</span> Pekan ke-{match.round}
       </a>
 
-      <ScoreHeader match={match} />
+      <Reveal><div><Badge tone={match.status === "LIVE" ? "live" : "accent"}>{match.status === "LIVE" ? "Live match" : "Match center"}</Badge><div className="mt-3"><ScoreHeader match={match} /></div></div></Reveal>
 
       {hasStarted && (
-        <>
-          <GoalScorers match={match} />
-          <MatchStats match={match} />
-          <Lineups match={match} />
-          <MatchTimeline match={match} />
-        </>
+        <div className="space-y-7">
+          <Reveal delay={0.04}><GoalScorers match={match} /></Reveal>
+          <Reveal delay={0.06}><MatchStats match={match} /></Reveal>
+          <Reveal delay={0.08}><Lineups match={match} /></Reveal>
+          <Reveal delay={0.1}><MatchTimeline match={match} /></Reveal>
+        </div>
       )}
     </div>
   );

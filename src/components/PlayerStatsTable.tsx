@@ -8,13 +8,13 @@ export default function PlayerStatsTable({
   metric: "goals" | "assists";
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-      <div className="border-b border-border/60 bg-surface-hover/50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted">
+    <div className="overflow-hidden rounded-[1.5rem] border border-border/80 bg-surface/80 shadow-[0_18px_50px_rgb(2_8_23/.18)]">
+      <div className="border-b border-border/60 bg-background/30 px-5 py-4 text-[10px] font-bold uppercase tracking-[0.18em] text-muted">
         {metric === "goals" ? "Top Scorers" : "Top Assists"} — Premier League
       </div>
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-xs uppercase tracking-wide text-muted">
+          <tr className="text-left text-[10px] uppercase tracking-[0.18em] text-muted">
             <th className="px-4 py-2.5">#</th>
             <th className="px-4 py-2.5">Pemain</th>
             <th className="hidden px-2 py-2.5 text-center sm:table-cell">Main</th>

@@ -16,7 +16,7 @@ export default function DateGroup({
   return (
     <section>
       <div className="mb-2 flex items-baseline gap-2 px-1">
-        <h2 className="text-sm font-bold">{formatFullDate(new Date(date))}</h2>
+        <h2 className="text-sm font-bold tracking-tight">{formatFullDate(new Date(date))}</h2>
         <span className="text-xs text-muted">
           {matches.length} pertandingan
         </span>

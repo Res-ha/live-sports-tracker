@@ -9,10 +9,10 @@ export default function StandingsTable({ rows }: { rows: StandingsRow[] }) {
   const favIds = useFavorites();
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border bg-surface">
+    <div className="overflow-x-auto rounded-[1.5rem] border border-border/80 bg-surface/80 shadow-[0_18px_50px_rgb(2_8_23/.18)]">
       <table className="w-full min-w-[520px] text-sm">
         <thead>
-          <tr className="text-left text-xs uppercase tracking-wide text-muted">
+          <tr className="bg-background/30 text-left text-[10px] font-bold uppercase tracking-[0.18em] text-muted">
             <th className="px-4 py-3">#</th>
             <th className="px-4 py-3">Tim</th>
             <th className="px-2 py-3 text-center">P</th>
@@ -30,7 +30,7 @@ export default function StandingsTable({ rows }: { rows: StandingsRow[] }) {
             return (
               <tr
                 key={row.team.id}
-                className={`border-t border-border/60 transition-colors hover:bg-surface-hover ${
+                className={`group border-t border-border/60 transition-colors hover:bg-surface-hover ${
                   isUcl ? "bg-ucl/[0.06]" : ""
                 } ${isFav ? "bg-accent/[0.06]" : ""}`}
               >
@@ -41,7 +41,7 @@ export default function StandingsTable({ rows }: { rows: StandingsRow[] }) {
                     className="flex items-center gap-3 font-semibold"
                   >
                     <TeamCrest team={row.team} size={26} />
-                    <span className="truncate">{row.team.name}</span>
+                    <span className="truncate transition-colors group-hover:text-accent">{row.team.name}</span>
                     {isFav && <span className="text-xs text-amber-400">★</span>}
                   </Link>
                 </td>
