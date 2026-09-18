@@ -65,17 +65,34 @@ Sebuah dashboard editorial sports-tech dengan empat area utama:
 
 ## Screenshots
 
-### Desktop — Home
+Screenshot berikut memperlihatkan alur utama Live PL Tracker dari overview musim
+hingga detail pertandingan, klasemen, statistik pemain, dan profil klub.
+
+### Home — Desktop
 
 ![Live PL Tracker desktop home](./docs/screenshots/home-desktop.png)
 
-### Mobile — Home
+### Home — Mobile
 
 ![Live PL Tracker mobile home](./docs/screenshots/home-mobile.png)
 
-### Desktop — Schedule & Match Center
+### Schedule & Match Center — Desktop
 
 ![Live PL Tracker schedule desktop](./docs/screenshots/schedule-desktop.png)
+
+![Live PL Tracker match center desktop](./docs/screenshots/match-center-desktop.png)
+
+### Standings — Desktop
+
+![Live PL Tracker standings desktop](./docs/screenshots/standings-desktop.png)
+
+### Player Stats — Desktop
+
+![Live PL Tracker player stats desktop](./docs/screenshots/stats-desktop.png)
+
+### Team Profile — Desktop
+
+![Live PL Tracker team profile desktop](./docs/screenshots/team-profile-desktop.png)
 
 ## Challenge
 
